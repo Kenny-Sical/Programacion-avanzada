@@ -43,6 +43,7 @@ namespace Lab5KennySical1273922 {
 	private: System::Windows::Forms::ListBox^ listPokemon;
 
 	private: System::Windows::Forms::TextBox^ Descripcion;
+	private: System::Windows::Forms::Button^ button2;
 
 	private:
 		/// <summary>
@@ -62,6 +63,7 @@ namespace Lab5KennySical1273922 {
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->listPokemon = (gcnew System::Windows::Forms::ListBox());
 			this->Descripcion = (gcnew System::Windows::Forms::TextBox());
+			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// LectorTXT
@@ -106,6 +108,21 @@ namespace Lab5KennySical1273922 {
 			this->Descripcion->Size = System::Drawing::Size(264, 114);
 			this->Descripcion->TabIndex = 2;
 			// 
+			// button2
+			// 
+			this->button2->BackColor = System::Drawing::Color::OrangeRed;
+			this->button2->Font = (gcnew System::Drawing::Font(L"Unispace", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button2->ForeColor = System::Drawing::SystemColors::ControlLightLight;
+			this->button2->Location = System::Drawing::Point(655, 520);
+			this->button2->Name = L"button2";
+			this->button2->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->button2->Size = System::Drawing::Size(119, 54);
+			this->button2->TabIndex = 3;
+			this->button2->Text = L"Ordenar";
+			this->button2->UseVisualStyleBackColor = false;
+			this->button2->Click += gcnew System::EventHandler(this, &Pokedex::button2_Click);
+			// 
 			// Pokedex
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -113,6 +130,7 @@ namespace Lab5KennySical1273922 {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(845, 619);
+			this->Controls->Add(this->button2);
 			this->Controls->Add(this->Descripcion);
 			this->Controls->Add(this->listPokemon);
 			this->Controls->Add(this->button1);
@@ -165,5 +183,8 @@ namespace Lab5KennySical1273922 {
 			Descripcion->Text = info;
 		}
 	}
+private: System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+
+}
 };
 }
