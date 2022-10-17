@@ -1,4 +1,5 @@
 #pragma once
+#include "Pokemon.h"
 
 namespace Lab5KennySical1273922 {
 
@@ -38,6 +39,7 @@ namespace Lab5KennySical1273922 {
 	private: System::Windows::Forms::OpenFileDialog^ LectorTXT;
 	protected:
 	private: System::Windows::Forms::Button^ button1;
+	private: System::Windows::Forms::ListBox^ listBox1;
 
 	private:
 		/// <summary>
@@ -55,6 +57,7 @@ namespace Lab5KennySical1273922 {
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Pokedex::typeid));
 			this->LectorTXT = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->SuspendLayout();
 			// 
 			// LectorTXT
@@ -75,6 +78,14 @@ namespace Lab5KennySical1273922 {
 			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &Pokedex::button1_Click);
 			// 
+			// listBox1
+			// 
+			this->listBox1->FormattingEnabled = true;
+			this->listBox1->Location = System::Drawing::Point(76, 188);
+			this->listBox1->Name = L"listBox1";
+			this->listBox1->Size = System::Drawing::Size(266, 173);
+			this->listBox1->TabIndex = 1;
+			// 
 			// Pokedex
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -82,6 +93,7 @@ namespace Lab5KennySical1273922 {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(845, 619);
+			this->Controls->Add(this->listBox1);
 			this->Controls->Add(this->button1);
 			this->Name = L"Pokedex";
 			this->Text = L"Pokedex";
@@ -93,11 +105,27 @@ namespace Lab5KennySical1273922 {
 		
 		if (System::Windows::Forms::DialogResult::OK == LectorTXT->ShowDialog()) {
 			StreamReader ^ InputStream = gcnew StreamReader(LectorTXT->FileName);
+			array<Pokemon^>^ misPokemon;
 			if ( InputStream != nullptr)
 			{
+				Pokemon^ miPokemon = gcnew Pokemon();
+				int IndexPokemon = 0;
 				while (String^ lineOfText = InputStream->ReadLine()) 
 				{
-
+					char separador = ',';
+					array<String^>^ palabras = lineOfText->Split(separador);
+					misPokemon = gcnew array<Pokemon^>(10);
+					
+					miPokemon->NationalNumber = palabras[0];
+					miPokemon->NamePokemon = palabras[1];
+					miPokemon->Generacion = palabras[2];
+					misPokemon[IndexPokemon] = miPokemon;
+					IndexPokemon++;
+				}
+				InputStream->Close();
+				for (int i = 0; i < IndexPokemon; i++)
+				{
+					listBox1->Items->Add(misPokemon[i]->NamePokemon);
 				}
 			}
 		}
