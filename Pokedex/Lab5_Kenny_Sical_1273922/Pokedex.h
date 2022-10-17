@@ -23,6 +23,7 @@ namespace Lab5KennySical1273922 {
 			//
 			//TODO: agregar código de constructor aquí
 			//
+			misPokemon = gcnew array<Pokemon^>(Array_Size);
 		}
 
 	protected:
@@ -39,7 +40,9 @@ namespace Lab5KennySical1273922 {
 	private: System::Windows::Forms::OpenFileDialog^ LectorTXT;
 	protected:
 	private: System::Windows::Forms::Button^ button1;
-	private: System::Windows::Forms::ListBox^ listBox1;
+	private: System::Windows::Forms::ListBox^ listPokemon;
+
+	private: System::Windows::Forms::TextBox^ Descripcion;
 
 	private:
 		/// <summary>
@@ -57,7 +60,8 @@ namespace Lab5KennySical1273922 {
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Pokedex::typeid));
 			this->LectorTXT = (gcnew System::Windows::Forms::OpenFileDialog());
 			this->button1 = (gcnew System::Windows::Forms::Button());
-			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
+			this->listPokemon = (gcnew System::Windows::Forms::ListBox());
+			this->Descripcion = (gcnew System::Windows::Forms::TextBox());
 			this->SuspendLayout();
 			// 
 			// LectorTXT
@@ -78,13 +82,29 @@ namespace Lab5KennySical1273922 {
 			this->button1->UseVisualStyleBackColor = false;
 			this->button1->Click += gcnew System::EventHandler(this, &Pokedex::button1_Click);
 			// 
-			// listBox1
+			// listPokemon
 			// 
-			this->listBox1->FormattingEnabled = true;
-			this->listBox1->Location = System::Drawing::Point(76, 188);
-			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(266, 173);
-			this->listBox1->TabIndex = 1;
+			this->listPokemon->Font = (gcnew System::Drawing::Font(L"Unispace", 9.749999F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->listPokemon->FormattingEnabled = true;
+			this->listPokemon->ItemHeight = 15;
+			this->listPokemon->Location = System::Drawing::Point(76, 188);
+			this->listPokemon->Name = L"listPokemon";
+			this->listPokemon->Size = System::Drawing::Size(266, 169);
+			this->listPokemon->TabIndex = 1;
+			this->listPokemon->SelectedIndexChanged += gcnew System::EventHandler(this, &Pokedex::listPokemon_SelectedIndexChanged);
+			// 
+			// Descripcion
+			// 
+			this->Descripcion->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->Descripcion->Font = (gcnew System::Drawing::Font(L"Unispace", 9, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->Descripcion->Location = System::Drawing::Point(510, 198);
+			this->Descripcion->Multiline = true;
+			this->Descripcion->Name = L"Descripcion";
+			this->Descripcion->Size = System::Drawing::Size(264, 114);
+			this->Descripcion->TabIndex = 2;
 			// 
 			// Pokedex
 			// 
@@ -93,43 +113,57 @@ namespace Lab5KennySical1273922 {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->ClientSize = System::Drawing::Size(845, 619);
-			this->Controls->Add(this->listBox1);
+			this->Controls->Add(this->Descripcion);
+			this->Controls->Add(this->listPokemon);
 			this->Controls->Add(this->button1);
 			this->Name = L"Pokedex";
 			this->Text = L"Pokedex";
 			this->ResumeLayout(false);
+			this->PerformLayout();
 
 		}
 #pragma endregion
+		array<Pokemon^>^ misPokemon;
+		int Array_Size = 10;
+		int IndexPokemon = 0;
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 		
 		if (System::Windows::Forms::DialogResult::OK == LectorTXT->ShowDialog()) {
 			StreamReader ^ InputStream = gcnew StreamReader(LectorTXT->FileName);
-			array<Pokemon^>^ misPokemon;
 			if ( InputStream != nullptr)
 			{
-				Pokemon^ miPokemon = gcnew Pokemon();
-				int IndexPokemon = 0;
-				while (String^ lineOfText = InputStream->ReadLine()) 
+				String^ lineOfText = InputStream->ReadLine();
+				while (lineOfText && (IndexPokemon<Array_Size)) 
 				{
+
 					char separador = ',';
 					array<String^>^ palabras = lineOfText->Split(separador);
-					misPokemon = gcnew array<Pokemon^>(10);
+					Pokemon^ miPokemon = gcnew Pokemon();
 					
-					miPokemon->NationalNumber = palabras[0];
-					miPokemon->NamePokemon = palabras[1];
-					miPokemon->Generacion = palabras[2];
+					miPokemon->setNationalNumber(palabras[0]);
+					miPokemon->setName(palabras[1]);
+					miPokemon->setGeneracion(palabras[2]);
 					misPokemon[IndexPokemon] = miPokemon;
+					lineOfText = InputStream->ReadLine();
 					IndexPokemon++;
 				}
+				
+			}
 				InputStream->Close();
 				for (int i = 0; i < IndexPokemon; i++)
 				{
-					listBox1->Items->Add(misPokemon[i]->NamePokemon);
+					listPokemon->Items->Add(misPokemon[i]->getName());
 				}
-			}
 		}
 
 	}
-	};
+	private: System::Void listPokemon_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e) {
+		if (listPokemon->SelectedIndex >= 0) {
+			String^ info = "Número nacional: " + misPokemon[listPokemon->SelectedIndex]->getNationalNumber() + "\r\n"
+				+ "Nombre: " + misPokemon[listPokemon->SelectedIndex]->getName() + "\r\n"
+				+ "Generación: " + misPokemon[listPokemon->SelectedIndex]->getGeneracion() + "\r\n";
+			Descripcion->Text = info;
+		}
+	}
+};
 }

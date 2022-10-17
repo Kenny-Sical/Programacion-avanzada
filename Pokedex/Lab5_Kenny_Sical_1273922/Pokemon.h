@@ -8,6 +8,12 @@ public:
 	String^ NamePokemon;
 	String^ Generacion;
 
+	String^ getName();
+	String^ getGeneracion();
+	String^ getNationalNumber();
+	void setName(String^ _name);
+	void setGeneracion(String^ _generacion);
+	void setNationalNumber(String^ _NationalNumber);
 
 };
 
