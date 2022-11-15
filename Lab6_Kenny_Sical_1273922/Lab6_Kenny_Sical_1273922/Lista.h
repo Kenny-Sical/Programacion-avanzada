@@ -1,19 +1,20 @@
 #pragma once
-template <typename tipo>
-class Lista {
-	struct Nodo
+
+template <typename T>
+class List {
+
+	//Creo una estructura Node
+	struct Node
 	{
-		tipo* item;
-		Nodo* next;
-		//Constructor
-		Node(tipo* item) {
+		T* item;
+		Node* next;
+		Node(T* item) { //Contructor
 			this->item = item;
 			this->next = nullptr;
 		}
 	};
-	//Crear cabeza y cola
-	Nodo* head;
-	Nodo* tail;
+	Node* head; //Creo un nodo cabeza y uno cola
+	Node* tail;
 	int size = 0;
 
 public:
@@ -21,35 +22,34 @@ public:
 		return this->size;
 	}
 	bool isEmpty() {
-		return this - size == 0;
+		return this->size == 0;
 	}
-	void add(tipo* item) {
-		Nodo* node = new Nodo(item);
+	void add(T* item) {
+		Node* node = new Node(item);
 		if (this->isEmpty()) {
-			this->head = this->tail->next;
+			this->head = this->tail = node;
 		}
-		else
-		{
+		else {
 			this->tail->next = node;
 			this->tail = this->tail->next;
 		}
 		this->size++;
 	}
-	tipo* get(int index) {
+	T* get(int index) {
 		if (index >= this->size || index < 0) {
 			return nullptr;
 		}
-		Nodo* interator = this->head;
+		Node* iterator = this->head;
 		int i = 0;
 		while (i < index) {
-			interator = interator->next;
-			i++
+			iterator = iterator->next;
+			i++;
 		}
-		return interator->item;
+		return iterator->item;
 	}
-	int getPosicion(tipo* value) {
+	int getPosicion(T* value) {
 		int count = 0;
-		Nodo* temp = this->head;
+		Node* temp = this->head;
 		while (temp != nullptr) {
 			if (temp->item = value) {
 				return count;
@@ -64,7 +64,7 @@ public:
 		this->size = 0;
 	}
 	void RemoveAt(int index) {
-		Nodo* temp = this->head;
+		Node* temp = this->head;
 		int count = 0;
 		while (temp != nullptr) {
 			if (index == 0) {
@@ -79,18 +79,15 @@ public:
 		}
 		this->size--;
 	}
-	void InsertArtStart(tipo* item) {
-		Nodo* node = new Nodo(item);
+	void InsertAtStart(T* item) {
+		Node* node = new Node(item);
 		if (this->isEmpty()) {
 			this->head = this->tail = node;
 		}
-		else
-		{
+		else {
 			node->next = this->head;
 			this->head = node;
 		}
-
 		this->size++;
 	}
-
 };

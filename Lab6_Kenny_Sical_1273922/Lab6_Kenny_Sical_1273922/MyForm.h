@@ -17,8 +17,8 @@ namespace Lab6KennySical1273922 {
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
-		Lista<int>* Arreglo;
-		array<Lista<int>*, 1>^ Hash = gcnew array<Lista<int>*, 1>(100);
+		List<int>* Arreglo;
+		array<List<int>*, 1>^ Hash = gcnew array<List<int>*, 1>(100);
 		MyForm(void)
 		{
 			InitializeComponent();
@@ -136,9 +136,17 @@ namespace Lab6KennySical1273922 {
 		{
 			int indice = *valor % 100;
 			if (Hash[indice] == nullptr)
-				Hash[indice] = new Lista<int>;
+				Hash[indice] = new List<int>;
 			Hash[indice]->add(valor);
 			return indice;
+		}
+		//Llenar la lista
+		void llenarLista(int n) {
+			int contador = 0;
+			for (int i = 0; i < n; i++) {
+				ListArreglo->Items->Add(contador + " -- " + arreglo[i]);
+				contador++;
+			}
 		}
 
 	private: System::Void GenArreglo_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -147,7 +155,9 @@ namespace Lab6KennySical1273922 {
 		{
 			longitud = Convert::ToInt32(TamañoArreglo->Text);
 			NumRandom();
+			llenarLista(longitud);
 		}
+
 	}
 	};
 }
