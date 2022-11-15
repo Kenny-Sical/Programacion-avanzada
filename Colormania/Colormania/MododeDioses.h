@@ -66,6 +66,7 @@ namespace Colormania {
 			this->button1->TabIndex = 0;
 			this->button1->Text = L"Cargar y mostrar archivo";
 			this->button1->UseVisualStyleBackColor = false;
+			this->button1->Click += gcnew System::EventHandler(this, &MododeDioses::button1_Click);
 			// 
 			// MododeDioses
 			// 
@@ -81,5 +82,8 @@ namespace Colormania {
 
 		}
 #pragma endregion
+	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+				
+	}
 	};
 }
