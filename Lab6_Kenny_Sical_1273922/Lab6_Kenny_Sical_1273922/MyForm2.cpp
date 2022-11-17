@@ -1,12 +1,12 @@
-#include "MyForm.h"
+#include "MyForm2.h"
 using namespace System;
 using namespace System::Windows::Forms;
 
 [STAThreadAttribute]
-int Ejercicio1(array<String^>^ args) {
+int Ejercicio2(array<String^>^ args) {
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);
-	Lab6KennySical1273922::MyForm form;
+	Lab6KennySical1273922::MyForm2 form;
 	Application::Run(% form);
 	return 0;
 }
