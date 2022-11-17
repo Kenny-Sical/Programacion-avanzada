@@ -3,7 +3,6 @@
 #include <list>
 
 namespace Lab6KennySical1273922 {
-
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -51,6 +50,9 @@ namespace Lab6KennySical1273922 {
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::TextBox^ Binariotxt;
 	private: System::Windows::Forms::Button^ button3;
+	private: System::Windows::Forms::Label^ label4;
+	private: System::Windows::Forms::TextBox^ Hashtxt;
+	private: System::Windows::Forms::Button^ button4;
 
 
 
@@ -75,11 +77,14 @@ namespace Lab6KennySical1273922 {
 			this->Secuencialtxt = (gcnew System::Windows::Forms::TextBox());
 			this->tabControl1 = (gcnew System::Windows::Forms::TabControl());
 			this->tabPage1 = (gcnew System::Windows::Forms::TabPage());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->Binariotxt = (gcnew System::Windows::Forms::TextBox());
+			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->tabPage2 = (gcnew System::Windows::Forms::TabPage());
-			this->button3 = (gcnew System::Windows::Forms::Button());
-			this->Binariotxt = (gcnew System::Windows::Forms::TextBox());
-			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->label4 = (gcnew System::Windows::Forms::Label());
+			this->Hashtxt = (gcnew System::Windows::Forms::TextBox());
+			this->button4 = (gcnew System::Windows::Forms::Button());
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
 			this->SuspendLayout();
@@ -148,6 +153,9 @@ namespace Lab6KennySical1273922 {
 			// 
 			// tabPage1
 			// 
+			this->tabPage1->Controls->Add(this->label4);
+			this->tabPage1->Controls->Add(this->Hashtxt);
+			this->tabPage1->Controls->Add(this->button4);
 			this->tabPage1->Controls->Add(this->label3);
 			this->tabPage1->Controls->Add(this->Binariotxt);
 			this->tabPage1->Controls->Add(this->button3);
@@ -165,6 +173,32 @@ namespace Lab6KennySical1273922 {
 			this->tabPage1->TabIndex = 0;
 			this->tabPage1->Text = L"tabPage1";
 			this->tabPage1->UseVisualStyleBackColor = true;
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->Location = System::Drawing::Point(259, 109);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(39, 13);
+			this->label3->TabIndex = 9;
+			this->label3->Text = L"Binario";
+			// 
+			// Binariotxt
+			// 
+			this->Binariotxt->Location = System::Drawing::Point(262, 134);
+			this->Binariotxt->Name = L"Binariotxt";
+			this->Binariotxt->Size = System::Drawing::Size(100, 20);
+			this->Binariotxt->TabIndex = 8;
+			// 
+			// button3
+			// 
+			this->button3->Location = System::Drawing::Point(262, 160);
+			this->button3->Name = L"button3";
+			this->button3->Size = System::Drawing::Size(75, 23);
+			this->button3->TabIndex = 7;
+			this->button3->Text = L"Binario";
+			this->button3->UseVisualStyleBackColor = true;
+			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
 			// label2
 			// 
@@ -185,31 +219,31 @@ namespace Lab6KennySical1273922 {
 			this->tabPage2->Text = L"tabPage2";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
-			// button3
+			// label4
 			// 
-			this->button3->Location = System::Drawing::Point(262, 160);
-			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(75, 23);
-			this->button3->TabIndex = 7;
-			this->button3->Text = L"Binario";
-			this->button3->UseVisualStyleBackColor = true;
-			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
+			this->label4->AutoSize = true;
+			this->label4->Location = System::Drawing::Point(259, 204);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(32, 13);
+			this->label4->TabIndex = 12;
+			this->label4->Text = L"Hash";
 			// 
-			// Binariotxt
+			// Hashtxt
 			// 
-			this->Binariotxt->Location = System::Drawing::Point(262, 134);
-			this->Binariotxt->Name = L"Binariotxt";
-			this->Binariotxt->Size = System::Drawing::Size(100, 20);
-			this->Binariotxt->TabIndex = 8;
+			this->Hashtxt->Location = System::Drawing::Point(262, 229);
+			this->Hashtxt->Name = L"Hashtxt";
+			this->Hashtxt->Size = System::Drawing::Size(100, 20);
+			this->Hashtxt->TabIndex = 11;
 			// 
-			// label3
+			// button4
 			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(259, 109);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(39, 13);
-			this->label3->TabIndex = 9;
-			this->label3->Text = L"Binario";
+			this->button4->Location = System::Drawing::Point(262, 255);
+			this->button4->Name = L"button4";
+			this->button4->Size = System::Drawing::Size(75, 23);
+			this->button4->TabIndex = 10;
+			this->button4->Text = L"Hash";
+			this->button4->UseVisualStyleBackColor = true;
+			this->button4->Click += gcnew System::EventHandler(this, &MyForm::button4_Click);
 			// 
 			// MyForm
 			// 
@@ -227,15 +261,15 @@ namespace Lab6KennySical1273922 {
 		}
 #pragma endregion
 		//Crear tabla hash
-			Hashtable^ Tabla = gcnew Hashtable();
+			//Hashtable^ Tabla = gcnew Hashtable();
 		//Crerar arreglo
 			int* vector;
 		//Insertar datos a la tabla
-		void insertarHash(int num,int tamaño) {
+		/*void insertarHash(int num, int tamaño) {
 			char n = Convert::ToChar(num);
 			int funcion = (n * 3) % tamaño;
 			Tabla[funcion] = num;
-		}
+		}*/
 		//Ordenar
 		void Burbuja(int n)
 		{
@@ -266,7 +300,7 @@ namespace Lab6KennySical1273922 {
 		}
 		int Binario(int busqueda, int tamaño)
 		{
-			int inf=0, sup=tamaño,mitad;
+			int inf=0, sup=tamaño,mitad,conteo=0;
 			char band = 'F';
 			while (inf <= sup)
 			{
@@ -283,6 +317,10 @@ namespace Lab6KennySical1273922 {
 					inf = mitad;
 					mitad = (inf + sup) / 2;
 				}
+				if(conteo == tamaño) {
+					break;
+				}
+				conteo++;
 			}
 			if (band == 'V')
 			{
@@ -308,7 +346,7 @@ namespace Lab6KennySical1273922 {
 			for (int i = 0; i < n; i++)
 			{
 				ListaDatos->Items->Add(i + " -- " + vector[i]);
-				insertarHash(vector[i], n);
+				//insertarHash(vector[i], n);
 			}
 		}
 		else
@@ -346,6 +384,15 @@ private: System::Void button3_Click(System::Object^ sender, System::EventArgs^ e
 		{
 			MessageBox::Show("El numero que busca se encuentra en la posicion " + Secuencial(BusquedaBinaria, tamaño));
 		}
+	}
+	else
+	{
+		MessageBox::Show("Ingrese un número", "Error", MessageBoxButtons::OK, MessageBoxIcon::Error);
+	}
+}
+private: System::Void button4_Click(System::Object^ sender, System::EventArgs^ e) {//Busqueda Hash
+	if (Hashtxt->Text != "") {
+		
 	}
 	else
 	{
