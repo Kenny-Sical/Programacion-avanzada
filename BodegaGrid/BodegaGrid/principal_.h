@@ -1,4 +1,11 @@
 #pragma once
+#include "stdlib.h"
+#include "Bahia.h"
+#include "Bodega.h"
+#include "Estructuras.h"
+#include "Item.h"
+#include "KardexInventario.h"
+#include "Ordenamientos.h"
 
 namespace BodegaGrid {
 
@@ -15,12 +22,18 @@ namespace BodegaGrid {
 	public ref class Principal_ : public System::Windows::Forms::Form
 	{
 	public:
+		BodegaGrid::Bahia^ newbay;
+		BodegaGrid::Bodega^ Bodega;
+		BodegaGrid::Ordenar^ BodegaKardex;
+		String^ responsable;
+		int contmovement;
 		Principal_(void)
 		{
 			InitializeComponent();
-			//
-			//TODO: agregar código de constructor aquí
-			//
+			Bodega = gcnew BodegaGrid::Bodega();
+			BodegaKardex = gcnew BodegaGrid::Ordenar();
+			responsable = "";
+			contmovement = 0;
 		}
 
 	protected:
@@ -536,6 +549,7 @@ namespace BodegaGrid {
 			this->AddProduct->TabIndex = 45;
 			this->AddProduct->Text = L"Añadir producto";
 			this->AddProduct->UseVisualStyleBackColor = false;
+			this->AddProduct->Click += gcnew System::EventHandler(this, &Principal_::AddProduct_Click);
 			// 
 			// NewBay
 			// 
@@ -550,6 +564,7 @@ namespace BodegaGrid {
 			this->NewBay->TabIndex = 44;
 			this->NewBay->Text = L"Crear Bahía";
 			this->NewBay->UseVisualStyleBackColor = false;
+			this->NewBay->Click += gcnew System::EventHandler(this, &Principal_::NewBay_Click);
 			// 
 			// groupBox4
 			// 
@@ -709,5 +724,327 @@ namespace BodegaGrid {
 
 		}
 #pragma endregion
-	};
+		//dibujo de data grid box
+		void AgregarDGV()
+		{
+			if (newbay->Columna > Bodega_DGV->ColumnCount || Bodega_DGV->Rows->Count <= newbay->Fila)
+			{
+				if (newbay->Columna > Bodega_DGV->ColumnCount)
+				{
+					Bodega_DGV->ColumnCount = newbay->Columna;
+				}
+				if (Bodega_DGV->Rows->Count <= newbay->Fila)
+				{
+					for (int i = Bodega_DGV->Rows->Count; i < newbay->Fila + 1; i++)
+					{
+						Bodega_DGV->Rows->Add();
+					}
+				}
+			}
+			Bahia_Texto(newbay);
+		}
+		//llenar DGV con Bahia
+		void Bahia_Texto(BodegaGrid::Bahia^ BahiaAdd)
+		{
+			String^ texto;
+			texto = "ID: " + BahiaAdd->ID + "\n";
+			texto += "Material: ";
+			for (int i = 0; i < newbay->Product->Count(); i++)
+			{
+				texto += BahiaAdd->Product[i];
+				if (i != BahiaAdd->Product->Count() - 1)
+				{
+					texto += ", ";
+				}
+			}
+			texto += "\n";
+			if (BahiaAdd->ActWeight != 0)
+			{
+				for (int i = 0; i < BahiaAdd->Items->Count(); i++)
+				{
+					if (BahiaAdd->Items[i]->Peek()->Type == 1)
+					{
+						texto += "Oficina, Qyt: " + BahiaAdd->Items[i]->Peek()->Unidades;
+						texto += "\n";
+					}
+					else if (BahiaAdd->Items[i]->Peek()->Type == 2)
+					{
+						texto += "Ropa, Qyt: " + BahiaAdd->Items[i]->Peek()->Unidades;
+						texto += "\n";
+					}
+					else if (BahiaAdd->Items[i]->Peek()->Type == 3)
+					{
+						texto += "Construcción, Qyt: " + BahiaAdd->Items[i]->Peek()->Unidades;
+						texto += "\n";
+					}
+				}
+			}
+			texto += "Peso actual: " + BahiaAdd->ActWeight + "\n";
+			texto += "Peso máx: " + BahiaAdd->MaxWeight;
+			Bodega_DGV->Rows[BahiaAdd->Fila]->Cells[BahiaAdd->Columna - 1]->Value = texto;
+		}
+		//Busca bahia para llenar
+		int BuscarBahia(BodegaGrid::Item^ item, BodegaGrid::Bahia^ x)
+		{
+			//conversiones y verificaciones
+			if (Name_responsable->Text != "")
+			{
+				responsable = Name_responsable->Text;
+			}
+			else
+			{
+				return -3;
+			}
+			//buscamos en el array
+			for (int i = 0; i < 26; i++)
+			{
+				if (Bodega->Bahias[i] != nullptr)
+				{
+					//buscamos en la lista 
+					for (int j = 0; j < Bodega->Bahias[i]->Count(); j++)
+					{
+						//si la lista contiene el tipo de item
+						if (Bodega->Bahias[i][j]->Product->Contains(item->Type))
+						{
+							//y no esta llena
+							if (!Bodega->Bahias[i][j]->Filled)
+							{
+								//y tampoco es igual a la salida
+								int z = x->Columna - 1;
+								if ((i != x->Fila && j != z) || (i == x->Fila && j != z) || (i != x->Fila && j == z))
+								{
+									//intentamos meter en la bahia
+									if (Bodega->Bahias[i][j]->Try_fill(item->Unidades * item->PesoU))
+									{
+										//seteamos
+										Bodega->Bahias[i][j]->SetItems(item);
+										Bodega->Bahias[i][j]->SetActWeight(item->Unidades * item->PesoU);
+										Bahia_Texto(Bodega->Bahias[i][j]);
+										if (x->Fila != -1)
+										{
+											contmovement++;
+											BodegaKardex->NewKardex(responsable, Bodega->Bahias[i][j]->ID, x->ID, "Agregar", Bodega->Bahias[i][j]->I_agregado->Price_u, Bodega->Bahias[i][j]->I_agregado->Unidades, Bodega);
+										}
+										else
+										{
+											contmovement++;
+											BodegaKardex->NewKardex(responsable, Bodega->Bahias[i][j]->ID, "", "Agregar", Bodega->Bahias[i][j]->I_agregado->Price_u, Bodega->Bahias[i][j]->I_agregado->Unidades, Bodega);
+										}
+										//items añadidos a bahia
+										return -1;
+									}
+									else
+									{
+										int prueba = 0;
+										//intenta meter item por item 
+										while (Bodega->Bahias[i][j]->Try_fill((prueba + 1) * item->PesoU) && prueba < item->Unidades)
+										{
+											prueba++;
+										}
+										//si logro meter setea un nuevo item y devuelve lo que sobró
+										if (prueba != 0)
+										{
+											BodegaGrid::Item^ newitem = gcnew BodegaGrid::Item();
+											newitem->SetPrice(item->Price_u);
+											newitem->SetType(item->Type);
+											try
+											{
+												int y = Bodega->Bahias[i][j]->Items[Bodega->Bahias[i][j]->IndexOfType(item->Type)]->Peek()->Unidades;
+												if (y != 0)
+												{
+													newitem->SetUnits(prueba + Bodega->Bahias[i][j]->Items[Bodega->Bahias[i][j]->IndexOfType(item->Type)]->Peek()->Unidades);
+												}
+												else
+												{
+													newitem->SetUnits(prueba);
+												}
+											}
+											catch (Exception^)
+											{
+												newitem->SetUnits(prueba);
+											}
+											newitem->SetWeight(item->PesoU);
+											int total = item->Unidades - prueba;
+											Bodega->Bahias[i][j]->SetItems(newitem);
+											Bodega->Bahias[i][j]->SetActWeight(prueba * item->PesoU);
+											Bahia_Texto(Bodega->Bahias[i][j]);
+											if (x->Fila != -1)
+											{
+												contmovement++;
+												BodegaKardex->NewKardex(responsable, Bodega->Bahias[i][j]->ID, "", "Agregar", Bodega->Bahias[i][j]->I_agregado->Price_u, Bodega->Bahias[i][j]->I_agregado->Unidades, Bodega);
+											}
+											else
+											{
+												contmovement++;
+												BodegaKardex->NewKardex(responsable, Bodega->Bahias[i][j]->ID, x->ID, "Agregar", Bodega->Bahias[i][j]->I_agregado->Price_u, Bodega->Bahias[i][j]->I_agregado->Unidades, Bodega);
+											}
+											return total;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return -2;
+		}
+	private: System::Void NewBay_Click(System::Object^ sender, System::EventArgs^ e) {
+		try
+		{
+			//conversiones y validaciones
+			char fila;
+			int columna = Convert::ToInt32(Column_NB->Text);
+			try
+			{
+				int prueba = Convert::ToInt32(Row_NB->Text);
+				MessageBox::Show("El valor de la fila ingresado no es válido, intente de nuevo", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+			}
+			catch (Exception^)
+			{
+				newbay = gcnew BodegaGrid::Bahia();
+				fila = Convert::ToChar(Row_NB->Text->ToUpper());
+				BodegaGrid::Ordenar^ neworder = gcnew BodegaGrid::Ordenar();
+				int fila2 = neworder->PosicionarVector(Convert::ToSByte(fila));
+				newbay->SetPos(columna, fila2);
+				newbay->SetID(Row_NB->Text->ToUpper(), Column_NB->Text);
+				newbay->SetMaxWeight(Convert::ToInt32(MaxWeight_NB->Text));
+				int contador = -1;
+				bool flag = false;
+				if (TProduct_1->Checked)
+				{
+					contador++;
+					newbay->SetIDProducto(1);
+				}
+				if (TProduct_2->Checked)
+				{
+					contador++;
+					newbay->SetIDProducto(2);
+				}
+				if (TProduct_3->Checked)
+				{
+					contador++;
+					newbay->SetIDProducto(3);
+				}
+				else if (contador == -1)
+				{
+					flag = true;
+				}
+				if (flag)
+				{
+					MessageBox::Show("Debe ingresar un tipo de producto", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+				}
+				else
+				{
+					//setea la bahia
+					Bodega->SetBahia(newbay);
+					//dibuja en el data grid box
+					AgregarDGV();
+				}
+			}
+		}
+		catch (Exception^)
+		{
+			MessageBox::Show("Error en los datos, intente de nuevo", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+		}
+		//borra todo
+		Row_NB->Clear();
+		Column_NB->Clear();
+		MaxWeight_NB->Clear();
+		TProduct_1->Refresh();
+		TProduct_2->Refresh();
+		TProduct_3->Refresh();
+	}
+private: System::Void AddProduct_Click(System::Object^ sender, System::EventArgs^ e) {
+	try
+	{
+		//conversiones y validaciones
+		if (Name_responsable->Text != "")
+		{
+			responsable = Name_responsable->Text;
+		}
+		else
+		{
+			ArgumentOutOfRangeException^ argumentOutOfRangeException = gcnew ArgumentOutOfRangeException();
+			throw argumentOutOfRangeException;
+		}
+		double precioU = Convert::ToDouble(CostU_AP->Text);
+		int cant = Convert::ToInt32(QuantityP_AP->Text);
+		double peso_u = Convert::ToDouble(WeightU_AP->Text);
+		int type = 0;
+		if (Product_1->Checked)
+		{
+			type = 1;
+		}
+		else if (Product_2->Checked)
+		{
+			type = 2;
+		}
+		else if (Producto_3->Checked)
+		{
+			type = 3;
+		}
+		//setteos
+		BodegaGrid::Item^ newitem = gcnew BodegaGrid::Item();
+		newitem->SetPrice(precioU);
+		newitem->SetType(type);
+		newitem->SetUnits(cant);
+		newitem->SetWeight(peso_u);
+		BodegaGrid::Ordenar^ neworder = gcnew BodegaGrid::Ordenar();
+		BodegaGrid::Bahia^ bodegax = gcnew BodegaGrid::Bahia();
+		bodegax->SetPos(-1, -1);
+		bool flag = false;
+		//busca bahia disponible
+		int x = BuscarBahia(newitem, bodegax);
+		//items restantes
+		int anterior = 0;
+		while (x != -1)
+		{
+			if (x == -2)
+			{
+				//si no hay bahia 
+				flag = true;
+				break;
+			}
+			if (x == -3)
+			{
+				//si el nombre no está
+				MessageBox::Show("Debe ingresar todos los valores pedidios", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+				break;
+			}
+			else
+			{
+				//si hay sobrante lo cambia y lo vuelve a mandar
+				newitem->SetUnits(x);
+				anterior = x;
+				x = BuscarBahia(newitem, bodegax);
+			}
+		}
+		if (flag)
+		{
+			//mensaje de error
+			MessageBox::Show("No existen bahías disponibles para guardar el producto. Items no ingresados: " + anterior, "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+			neworder->NewStock(type, anterior, precioU, Bodega);
+		}
+		else
+		{
+			//si se agregó
+			MessageBox::Show("Items agregados correctamente", "Items agregados", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			neworder->NewStock(type, cant, precioU, Bodega);
+		}
+	}
+	catch (Exception^)
+	{
+		//si falta algo
+		MessageBox::Show("No se ha ingresado un valor, intente de nuevo", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+	}
+	//borra todo x2
+	QuantityP_AP->Clear();
+	WeightU_AP->Clear();
+	CostU_AP->Clear();
+	Product_1->Refresh();
+	Product_2->Refresh();
+	Producto_3->Refresh();
+}
+};
 }
