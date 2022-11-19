@@ -672,6 +672,7 @@ namespace BodegaGrid {
 			this->Stock->TabIndex = 53;
 			this->Stock->Text = L"Revisar Inventario";
 			this->Stock->UseVisualStyleBackColor = false;
+			this->Stock->Click += gcnew System::EventHandler(this, &Principal_::Stock_Click);
 			// 
 			// DeleteBay
 			// 
@@ -1188,6 +1189,50 @@ private: System::Void DeleteBay_Click(System::Object^ sender, System::EventArgs^
 	{
 		//si no ingresa algun valor
 		MessageBox::Show("Debe ingresar todos los valores pedidios", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+	}
+}
+private: System::Void Stock_Click(System::Object^ sender, System::EventArgs^ e) {
+	//ordena segun lo que diga el usuario
+	BodegaGrid::Ordenar^ neworder = gcnew BodegaGrid::Ordenar();
+	if (Ordenamientos->SelectedIndex == 0)
+	{
+		neworder->OrdenarTipo(Bodega);
+	}
+	else if (Ordenamientos->SelectedIndex == 1)
+	{
+		neworder->OrdenarCantidad(Bodega);
+	}
+	else if (Ordenamientos->SelectedIndex == 2)
+	{
+		neworder->OrdenarPrecio(Bodega);
+	}
+	//setea valores del header
+	Aux_DGV->Columns->Clear();
+	Aux_DGV->Rows->Clear();
+	array<BodegaGrid::Inventario^>^ inventario = gcnew array<BodegaGrid::Inventario^>(3);
+	inventario = Bodega->InventarioStack->ToArray();
+	Aux_DGV->ColumnCount = 3;
+	Aux_DGV->Columns[0]->HeaderText = "Tipo";
+	Aux_DGV->Columns[1]->HeaderText = "Cantidad";
+	Aux_DGV->Columns[2]->HeaderText = "Precio";
+	//llena
+	for (int i = 0; i < inventario->Length; i++)
+	{
+		Aux_DGV->Rows->Add();
+		if (inventario[i]->Type == 1)
+		{
+			Aux_DGV->Rows[i]->Cells[0]->Value = "Materiales de oficina";
+		}
+		else if (inventario[i]->Type == 2)
+		{
+			Aux_DGV->Rows[i]->Cells[0]->Value = "Ropa";
+		}
+		else if (inventario[i]->Type == 3)
+		{
+			Aux_DGV->Rows[i]->Cells[0]->Value = "Materiales de construcción";
+		}
+		Aux_DGV->Rows[i]->Cells[1]->Value = inventario[i]->Units;
+		Aux_DGV->Rows[i]->Cells[2]->Value = inventario[i]->Price;
 	}
 }
 //Llaves finales
