@@ -199,6 +199,7 @@ namespace BodegaGrid {
 			this->DeleteProduct->TabIndex = 51;
 			this->DeleteProduct->Text = L"Eliminar producto";
 			this->DeleteProduct->UseVisualStyleBackColor = false;
+			this->DeleteProduct->Click += gcnew System::EventHandler(this, &Principal_::DeleteProduct_Click);
 			// 
 			// groupBox5
 			// 
@@ -1046,5 +1047,75 @@ private: System::Void AddProduct_Click(System::Object^ sender, System::EventArgs
 	Product_2->Refresh();
 	Producto_3->Refresh();
 }
+private: System::Void DeleteProduct_Click(System::Object^ sender, System::EventArgs^ e) {
+	try
+	{
+		//validaciones y conversiones
+		if (Name_responsable->Text != "")
+		{
+			responsable = Name_responsable->Text;
+		}
+		else
+		{
+			ArgumentOutOfRangeException^ argumentOutOfRangeException = gcnew ArgumentOutOfRangeException();
+			throw argumentOutOfRangeException;
+		}
+		int cantidad = Convert::ToInt32(cant_deleteproduct->Text);
+		char cfila = Convert::ToChar(ID_DeleteProduct->Text->Substring(0, 1)->ToUpper());
+		SByte fila = Convert::ToSByte(cfila);
+		BodegaGrid::Ordenar^ neworder = gcnew BodegaGrid::Ordenar();
+		int posfila = neworder->PosicionarVector(fila);
+		int columna = Convert::ToSByte(ID_DeleteProduct->Text->Substring(1, 1));
+		int type = 0;
+		if (D_product1->Checked)
+		{
+			type = 1;
+		}
+		else if (D_product2->Checked)
+		{
+			type = 2;
+		}
+		else if (D_product3->Checked)
+		{
+			type = 3;
+		}
+		try
+		{
+			int remover = 0;
+			//remueve la cantidad ingresada y devuelve lo que se eliminó, si no es igual al valor de items a eliminar
+			//significa que hay que pasar a la siguiente posicion de la cola 
+			//si es mayor a toda la cola, error
+			remover = Bodega->Bahias[posfila][columna - 1]->RemoveItems(cantidad, type);
+			while (remover != cantidad)
+			{
+				contmovement++;
+				BodegaKardex->NewKardex(responsable, "", Bodega->Bahias[posfila][columna - 1]->ID, "Items removidos", Bodega->Bahias[posfila][columna - 1]->I_eliminado->Price_u, -remover, Bodega);
+				//sobrante
+				cantidad -= remover;
+				//vuelve a buscar si hay items por eliminar
+				remover = Bodega->Bahias[posfila][columna - 1]->RemoveItems(cantidad, type);
+				//seteo de inventario
+				neworder->NewStock(type, -remover, Bodega->Bahias[posfila][columna - 1]->I_eliminado->Price_u, Bodega);
+			}
+			contmovement++;
+			//cambio de peso
+			Bodega->Bahias[posfila][columna - 1]->SetActWeight(cantidad * -Bodega->Bahias[posfila][columna - 1]->Items[Bodega->Bahias[posfila][columna - 1]->IndexOfType(type)]->Peek()->PesoU);
+			//kardex
+			BodegaKardex->NewKardex(responsable, "", Bodega->Bahias[posfila][columna - 1]->ID, "Items removidos", Bodega->Bahias[posfila][columna - 1]->I_eliminado->Price_u, -remover, Bodega);
+			neworder->NewStock(type, -remover, Bodega->Bahias[posfila][columna - 1]->I_eliminado->Price_u, Bodega);
+			//escribir en el datagridbox
+			Bahia_Texto(Bodega->Bahias[posfila][columna - 1]);
+		}
+		catch (Exception^)
+		{
+			MessageBox::Show("La cantidad de elementos o el tipo de items que desea eliminar no está disponible en la bahía", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+		}
+	}
+	catch (Exception^)
+	{
+		MessageBox::Show("No se ingreso uno de los valores necesarios", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+	}
+}
+//Llaves finales
 };
 }
