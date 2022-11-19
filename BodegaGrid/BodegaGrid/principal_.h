@@ -111,6 +111,7 @@ namespace BodegaGrid {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Principal_::typeid));
 			this->Bodega_DGV = (gcnew System::Windows::Forms::DataGridView());
 			this->Aux_DGV = (gcnew System::Windows::Forms::DataGridView());
 			this->DeleteProduct = (gcnew System::Windows::Forms::Button());
@@ -173,7 +174,7 @@ namespace BodegaGrid {
 			// 
 			this->Bodega_DGV->BackgroundColor = System::Drawing::Color::White;
 			this->Bodega_DGV->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->Bodega_DGV->Location = System::Drawing::Point(13, 13);
+			this->Bodega_DGV->Location = System::Drawing::Point(13, 44);
 			this->Bodega_DGV->Name = L"Bodega_DGV";
 			this->Bodega_DGV->Size = System::Drawing::Size(573, 315);
 			this->Bodega_DGV->TabIndex = 0;
@@ -182,7 +183,7 @@ namespace BodegaGrid {
 			// 
 			this->Aux_DGV->BackgroundColor = System::Drawing::Color::White;
 			this->Aux_DGV->ColumnHeadersHeightSizeMode = System::Windows::Forms::DataGridViewColumnHeadersHeightSizeMode::AutoSize;
-			this->Aux_DGV->Location = System::Drawing::Point(12, 334);
+			this->Aux_DGV->Location = System::Drawing::Point(13, 494);
 			this->Aux_DGV->Name = L"Aux_DGV";
 			this->Aux_DGV->Size = System::Drawing::Size(573, 286);
 			this->Aux_DGV->TabIndex = 1;
@@ -693,6 +694,9 @@ namespace BodegaGrid {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackColor = System::Drawing::Color::White;
+			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
+			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Zoom;
 			this->ClientSize = System::Drawing::Size(1312, 895);
 			this->Controls->Add(this->groupBox4);
 			this->Controls->Add(this->groupBox3);
