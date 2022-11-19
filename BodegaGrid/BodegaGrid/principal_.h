@@ -685,6 +685,7 @@ namespace BodegaGrid {
 			this->DeleteBay->TabIndex = 52;
 			this->DeleteBay->Text = L"Eliminar Bahía";
 			this->DeleteBay->UseVisualStyleBackColor = false;
+			this->DeleteBay->Click += gcnew System::EventHandler(this, &Principal_::DeleteBay_Click);
 			// 
 			// Principal_
 			// 
@@ -1114,6 +1115,79 @@ private: System::Void DeleteProduct_Click(System::Object^ sender, System::EventA
 	catch (Exception^)
 	{
 		MessageBox::Show("No se ingreso uno de los valores necesarios", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+	}
+}
+private: System::Void DeleteBay_Click(System::Object^ sender, System::EventArgs^ e) {
+	try
+	{
+		//conersiones y validaciones
+		responsable = Name_responsable->Text;
+		int column = Convert::ToInt32(Column_DB->Text);
+		char row = Convert::ToChar(Row_DB->Text->ToUpper());
+		BodegaGrid::Ordenar^ neworder = gcnew BodegaGrid::Ordenar();
+		int rows = neworder->PosicionarVector(Convert::ToSByte(row));
+		BodegaGrid::Bahia^ bahiavacia = gcnew BodegaGrid::Bahia();
+		try
+		{
+			//busca el primer tipo de item a eliminar, si regresa -1 la bahia está vacía
+			int eliminar = Bodega->DeleteBahia(rows, column, 0);
+		reinicio:
+			while (eliminar != -1)
+			{
+				//guarda la posicion de la lista
+				int remover = Bodega->Bahias[rows][column - 1]->IndexOfType(eliminar);
+				//primero busca en las otras bahias y setea lo que saco 
+				int prueba = BuscarBahia(Bodega->Bahias[rows][column - 1]->Items[Bodega->Bahias[rows][column - 1]->IndexOfType(eliminar)]->Peek(), Bodega->Bahias[rows][column - 1]);
+				//si no encontó bahia, error
+				if (prueba == -2)
+				{
+					ArgumentOutOfRangeException^ argumentOutOfRangeException = gcnew ArgumentOutOfRangeException();
+					throw argumentOutOfRangeException;
+				}
+				//seteamos peso y removemos items
+				Bodega->Bahias[rows][column - 1]->SetActWeight(-Bodega->Bahias[rows][column - 1]->Items[remover]->Peek()->Unidades * Bodega->Bahias[rows][column - 1]->Items[remover]->Peek()->PesoU);
+				Bodega->Bahias[rows][column - 1]->RemoveItems(Bodega->Bahias[rows][column - 1]->Items[Bodega->Bahias[rows][column - 1]->IndexOfType(eliminar)]->Peek()->Unidades, eliminar);
+				try
+				{
+					//probamos si todavia hay items
+					if (Bodega->Bahias[rows][column - 1]->Items[remover]->Peek()->Unidades > 0)
+					{
+						eliminar = Bodega->DeleteBahia(rows, column, eliminar - 1);
+					}
+				}
+				catch (Exception^)
+				{
+					//si no, removemos la ultima iteracion 
+					Bodega->Bahias[rows][column - 1]->Items->RemoveAt(remover);
+					contmovement++;
+					//kardex
+					BodegaKardex->NewKardex(responsable, "", Bodega->Bahias[rows][column - 1]->ID, "Items removidos", Bodega->Bahias[rows][column - 1]->I_eliminado->Price_u, -Bodega->Bahias[rows][column - 1]->I_eliminado->Unidades, Bodega);
+					//eliminamos bahia 
+					eliminar = Bodega->DeleteBahia(rows, column, eliminar);
+					//reiniciamos y salimos
+					goto reinicio;
+				}
+				contmovement++;
+				BodegaKardex->NewKardex(responsable, "", Bodega->Bahias[rows][column - 1]->ID, "Items removidos", Bodega->Bahias[rows][column - 1]->I_eliminado->Price_u, -Bodega->Bahias[rows][column - 1]->I_eliminado->Unidades, Bodega);
+
+			}
+			contmovement++;
+			BodegaKardex->NewKardex(responsable, "", Row_DB->Text->ToUpper() + Column_DB->Text, "Bahia eliminada", 0, 0, Bodega);
+			MessageBox::Show("Bahia eliminada con éxito", "Acción exitosa", MessageBoxButtons::OK, MessageBoxIcon::Information);
+			Bodega_DGV->Rows[rows]->Cells[column - 1]->Value = "";
+		}
+		catch (Exception^)
+		{
+			//si hay errores
+			MessageBox::Show("No existe la bahia que desea eliminar, o no hay suficientes espacios disponibles para" +
+				"vaciar la bahia y eliminarla", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
+
+		}
+	}
+	catch (Exception^)
+	{
+		//si no ingresa algun valor
+		MessageBox::Show("Debe ingresar todos los valores pedidios", "Error", MessageBoxButtons::OK, MessageBoxIcon::Exclamation);
 	}
 }
 //Llaves finales
