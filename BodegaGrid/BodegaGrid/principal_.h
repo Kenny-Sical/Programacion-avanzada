@@ -659,6 +659,7 @@ namespace BodegaGrid {
 			this->Kardex->TabIndex = 54;
 			this->Kardex->Text = L"Revisar Kardex";
 			this->Kardex->UseVisualStyleBackColor = false;
+			this->Kardex->Click += gcnew System::EventHandler(this, &Principal_::Kardex_Click);
 			// 
 			// Stock
 			// 
@@ -1233,6 +1234,37 @@ private: System::Void Stock_Click(System::Object^ sender, System::EventArgs^ e) 
 		}
 		Aux_DGV->Rows[i]->Cells[1]->Value = inventario[i]->Units;
 		Aux_DGV->Rows[i]->Cells[2]->Value = inventario[i]->Price;
+	}
+}
+private: System::Void Kardex_Click(System::Object^ sender, System::EventArgs^ e) {
+	//seteo de las caracteristicas en el DGV
+	Aux_DGV->Columns->Clear();
+	Aux_DGV->Rows->Clear();
+	array<BodegaGrid::Kardex^>^ kardex = gcnew array<BodegaGrid::Kardex^>(contmovement);
+	kardex = Bodega->KardexStack->ToArray();
+	Aux_DGV->ColumnCount = 9;
+	Aux_DGV->Columns[0]->HeaderText = "Entrada";
+	Aux_DGV->Columns[1]->HeaderText = "Salida";
+	Aux_DGV->Columns[2]->HeaderText = "Movimiento";
+	Aux_DGV->Columns[3]->HeaderText = "Código";
+	Aux_DGV->Columns[4]->HeaderText = "Responsable";
+	Aux_DGV->Columns[5]->HeaderText = "Cantidad de unidades";
+	Aux_DGV->Columns[6]->HeaderText = "Precio unitario";
+	Aux_DGV->Columns[7]->HeaderText = "Costo inventario";
+	Aux_DGV->Columns[8]->HeaderText = "Fecha";
+	//lenamos
+	for (int i = 0; i < contmovement; i++)
+	{
+		Aux_DGV->Rows->Add();
+		Aux_DGV->Rows[i]->Cells[0]->Value = kardex[i]->Entrance;
+		Aux_DGV->Rows[i]->Cells[1]->Value = kardex[i]->Exit;
+		Aux_DGV->Rows[i]->Cells[2]->Value = kardex[i]->Movement;
+		Aux_DGV->Rows[i]->Cells[3]->Value = kardex[i]->Code;
+		Aux_DGV->Rows[i]->Cells[4]->Value = kardex[i]->Responsible;
+		Aux_DGV->Rows[i]->Cells[5]->Value = kardex[i]->Size;
+		Aux_DGV->Rows[i]->Cells[6]->Value = kardex[i]->Price_Unit;
+		Aux_DGV->Rows[i]->Cells[7]->Value = kardex[i]->Total;
+		Aux_DGV->Rows[i]->Cells[8]->Value = kardex[i]->Date;
 	}
 }
 //Llaves finales
